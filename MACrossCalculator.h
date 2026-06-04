@@ -31,7 +31,9 @@ public:
 	 }
 };
 
-class MACrossSignal
+enum class Signal { Hold, Buy, Sell };
+
+class MACrossCalculator
 {
 private:
 	int _count = 0;
@@ -40,7 +42,7 @@ private:
 	SmaCalculator _slow_sma;
 
 public:
-	MACrossSignal(int fast_window_size, int slow_window_size):
+	MACrossCalculator(int fast_window_size, int slow_window_size):
 		_slow_window_size(slow_window_size),
 		_fast_sma(fast_window_size),
 		_slow_sma(slow_window_size)
@@ -51,21 +53,28 @@ public:
 		}
 	}
 
-	int update(double price)
+	Signal update(double price)
 	{
 		double fast = _fast_sma.add(price);
 		double slow = _slow_sma.add(price);
 
-		if(_count++ < _slow_window_size)
+		if(++_count < _slow_window_size)
 		{
-			return 0; // not enough data yet
+			// not enough data yet
+			return Signal::Hold; 
 		}
 
 		if (fast > slow)
-			return 1; // buy signal
+		{
+			return Signal::Buy;
+		}
 		else if (fast < slow)
-			return -1; // sell signal
+		{
+			return Signal::Sell;
+		}
 		else
-			return 0; // no signal
+		{
+			return Signal::Hold;
+		}
 	}
 };
