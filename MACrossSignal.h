@@ -1,4 +1,5 @@
 #pragma once
+#include <stdexcept>
 #include <vector>
 
 class SmaCalculator
@@ -12,7 +13,12 @@ private:
 public:
 	SmaCalculator(int window_size):
 		_window(window_size, 0.0)
-	{}
+	{
+		if(window_size <= 0)
+		{
+			throw new std::invalid_argument("window_size must be positive");
+		}
+	}
 
 	double add(double value)
 	{
@@ -38,7 +44,12 @@ public:
 		_slow_window_size(slow_window_size),
 		_fast_sma(fast_window_size),
 		_slow_sma(slow_window_size)
-	{ }
+	{ 
+		if(fast_window_size > slow_window_size)
+		{
+			throw new std::invalid_argument("fast_window_size must be less than slow_window_size");
+		}
+	}
 
 	int update(double price)
 	{
